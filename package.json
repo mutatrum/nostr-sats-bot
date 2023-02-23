@@ -1,0 +1,23 @@
+{
+  "name": "nostr-sats-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "nostr-sats-bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mutatrum/nostr_sats_bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mutatrum/nostr_sats_bot/issues"
+  },
+  "homepage": "https://github.com/mutatrum/nostr_sats_bot#readme",
+  "dependencies": {
+    "node-cron": "^3.0.2",
+    "nostr": "github:jb55/nostr-js"
+  }
+}
