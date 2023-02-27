@@ -3,20 +3,24 @@ const config = require('./config')
 const cron = require("node-cron");
 const https = require("https");
 const { RelayPool, Relay, signId, calculateId, getPublicKey } = require('nostr')
+const { bech32 } = require('bech32')
+const buffer = require('buffer')
 
 process.on('uncaughtException', (err) => console.log(err))
 
 console.log('start')
 
 for (let bot of config.bots) {
-  console.log(`init ${bot.name} on ${bot.schedule}`)
-  cron.schedule(bot.schedule, () => onSchedule(bot))
+  if (bot.privkey) {
+    const pubkey = getPublicKey(bot.privkey)
+    const npub = pubkeytonpub(pubkey)
+    console.log(`init ${bot.name} ${npub} on ${bot.schedule}`)
+    cron.schedule(bot.schedule, () => onSchedule(bot))
+  }
 }
 
 async function onSchedule(bot) {
   try {
-    if (!bot.privkey) return
-
     const result = await queryPrice(bot)
   
     if (result.code) {
@@ -62,6 +66,11 @@ async function onSchedule(bot) {
   catch (error) {
     console.error(error)
   }
+}
+
+function pubkeytonpub(pubkey) {
+  let words = bech32.toWords( buffer.Buffer.from( pubkey, 'hex' ) );
+  return bech32.encode( "npub", words );
 }
 
 function queryPrice(bot) {
