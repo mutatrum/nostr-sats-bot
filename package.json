@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mutatrum/nostr_sats_bot#readme",
   "dependencies": {
+    "bech32": "^2.0.0",
     "node-cron": "^3.0.2",
     "nostr": "github:jb55/nostr-js"
   }
