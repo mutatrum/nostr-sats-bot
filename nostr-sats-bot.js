@@ -1,8 +1,10 @@
+require('log-timestamp');
+
 const config = require('./config')
 
 const cron = require("node-cron");
 const https = require("https");
-const { RelayPool, Relay, signId, calculateId, getPublicKey } = require('nostr')
+const { Relay, signId, calculateId, getPublicKey } = require('nostr')
 const { bech32 } = require('bech32')
 const buffer = require('buffer')
 
