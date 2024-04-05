@@ -18,11 +18,14 @@ for (let bot of config.bots) {
     const npub = pubkeytonpub(pubkey)
     console.log(`init ${bot.name} ${npub} on ${bot.schedule}`)
     cron.schedule(bot.schedule, () => onSchedule(bot))
+
+    // onSchedule(bot)
   }
 }
 
 async function onSchedule(bot) {
   try {
+    console.log(bot.name)
     const result = await queryPrice(bot)
   
     if (result.code) {
@@ -31,6 +34,10 @@ async function onSchedule(bot) {
     }
   
     var price = Function('result', "return " + bot.eval)(result);
+
+    if (bot.multiplier) {
+      price *= bot.multiplier
+    }
     
     var sats = getSats(price);
 
@@ -77,15 +84,32 @@ function pubkeytonpub(pubkey) {
 
 function queryPrice(bot) {
   return new Promise(function(resolve, reject) {
-    https.get(bot.uri, { headers : { "accept" : "application/json" }}, res => {
+
+    const options = {
+      headers : { "accept" : "application/json", "content-type": "application/json" }
+    }
+
+    if (bot.method) {
+      options.method = bot.method
+    }
+
+    const req = https.request(bot.uri, options, res => {
       let body = "";
       res.on("data", data => {
         body += data;
-      });
+      })
       res.on("end", () => {
         resolve(JSON.parse(body));
-      });
+      })
+    }).on('error', (e) => {
+      console.error(e);
     });
+
+    if (bot.payload) {
+      req.write(bot.payload)
+    }
+
+    req.end()
   });
 }
 
@@ -130,7 +154,7 @@ function sendNote(url, notes) {
   
   relay.on('ok', (id) => {
     // if (id === note.id) {
-      console.log(`Zap note ${id} sent on ${relay.url}`)
+      console.log(`Note ${id} sent on ${relay.url}`)
 
       // setImmediate(() => relay.close())
     // }
